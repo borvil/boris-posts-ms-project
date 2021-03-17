@@ -53,4 +53,9 @@ public class PostServiceImpl implements IPostService {
     public void deletePostById(Long id) {
         postRepository.deleteById(id);
     }
+
+    @Override
+    public List<Post> getPostsByUserId(Long id) {
+        return postRepository.getAllByUserId(id);
+    }
 }

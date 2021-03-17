@@ -13,4 +13,6 @@ public interface IPostService {
     Post updatePost(Long id, Post post);
     void deletePostById(Long id);
 
+    List<Post> getPostsByUserId(Long id);
+
 }

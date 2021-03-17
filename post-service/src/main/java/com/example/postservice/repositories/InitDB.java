@@ -14,16 +14,17 @@ import java.util.List;
 public class InitDB implements CommandLineRunner {
 
 
-private final PostRepository postRepository;
+    private final PostRepository postRepository;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
 
         List<Post> posts = Arrays.asList(
-                new Post( 1L, "John Post", 1L),
-                new Post( 2L, "Peter Post", 2L),
-                new Post( 3L, "Marie Post", 3L)
+                new Post("John Post", 1L),
+                new Post("Peter Post", 2L),
+                new Post("Marie Post", 3L),
+                new Post("Peter Second Post ", 2L)
         );
         postRepository.saveAll(posts);
     }

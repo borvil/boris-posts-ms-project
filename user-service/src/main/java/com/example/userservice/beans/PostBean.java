@@ -13,4 +13,5 @@ public class PostBean {
     private String post;
 
     private Long userId;
+
 }

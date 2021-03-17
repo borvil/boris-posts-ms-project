@@ -1,6 +1,5 @@
 package com.example.postservice.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,8 +8,12 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Post {
+
+    public Post(String post, Long userId) {
+        this.post = post;
+        this.userId = userId;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
