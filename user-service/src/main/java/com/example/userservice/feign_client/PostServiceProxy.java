@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RibbonClient(name="post-service")
 public interface PostServiceProxy {
 
-    @GetMapping("/{id}")
+    @GetMapping("/post-service/posts/{id}")
     PostBean getPost(@PathVariable("id") Long id);
 }
