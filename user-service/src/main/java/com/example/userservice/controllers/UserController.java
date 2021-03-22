@@ -18,7 +18,6 @@ import java.util.List;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-
     private final IUserService userService;
     private final PostServiceProxy feignPostServiceProxy;
 
@@ -70,6 +69,14 @@ public class UserController {
             resultList.add(new PostBean(p.getId(), p.getPost(), p.getUserId()));
         }
         return resultList;
+
+    }
+
+    @PostMapping("/feign-proxy-posts/{userId}")
+    public PostBean addPostByUser(@PathVariable Long userId,@RequestBody String post) {
+        PostBean createdPost = feignPostServiceProxy.addPostByUser(userId, post);
+        log.info("{}", createdPost);
+        return new PostBean(createdPost.getId(), createdPost.getPost(), createdPost.getUserId());
 
     }
 

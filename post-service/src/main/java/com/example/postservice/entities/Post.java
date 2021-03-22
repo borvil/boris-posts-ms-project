@@ -15,6 +15,10 @@ public class Post {
         this.userId = userId;
     }
 
+    public Post(String post) {
+        this.post = post;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
