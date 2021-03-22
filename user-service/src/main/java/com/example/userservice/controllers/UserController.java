@@ -4,9 +4,11 @@ import com.example.userservice.beans.PostBean;
 import com.example.userservice.entities.User;
 import com.example.userservice.feign_client.PostServiceProxy;
 import com.example.userservice.services.interfaces.IUserService;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.h2.util.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -72,7 +74,7 @@ public class UserController {
 
     }
 
-    @PostMapping("/feign-proxy-posts/{userId}")
+    @PostMapping(value = "/feign-proxy-posts/{userId}" )
     public PostBean addPostByUser(@PathVariable Long userId,@RequestBody String post) {
         PostBean createdPost = feignPostServiceProxy.addPostByUser(userId, post);
         log.info("{}", createdPost);

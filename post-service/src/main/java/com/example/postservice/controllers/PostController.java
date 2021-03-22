@@ -52,8 +52,8 @@ public class PostController {
     }
 
     @PostMapping("/feign_posts/{userId}")
-    public Post addPostByUser(@PathVariable Long userId, @RequestBody JSONPObject post) {
-        Post candidatePost = new Post(post.toString(), userId);
+    public Post addPostByUser(@PathVariable Long userId, @RequestBody String post) {
+        Post candidatePost = new Post(post, userId);
         return postService.createPost(candidatePost);
     }
 
