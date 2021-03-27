@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.h2.util.json.JSONObject;
 import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,5 +21,10 @@ public interface PostServiceProxy {
 
     @PostMapping("/post-service/posts/feign_posts/{userId}")
     PostBean addPostByUser(@PathVariable("userId")Long userId, @RequestBody String post);
+
+    @DeleteMapping("/post-service/posts/feign_post/userid/{userId}/postid/{postId}")
+    void deletePost(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId);
+
+
 
 }

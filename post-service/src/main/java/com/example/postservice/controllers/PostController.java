@@ -56,5 +56,14 @@ public class PostController {
         Post candidatePost = new Post(post, userId);
         return postService.createPost(candidatePost);
     }
+    @DeleteMapping("/feign_post/userid/{userId}/postid/{postId}")
+    public void removePostByUser(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId ) {
+        List<Post> posts = postService.getPostsByUserId(userId);
+        for (int i = 0; i < posts.size(); i++) {
+            if (posts.get(i).getId().equals(postId)){
+                postService.deletePostById(postId);
+            }
+        }
+    }
 
 }

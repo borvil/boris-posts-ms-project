@@ -82,6 +82,11 @@ public class UserController {
 
     }
 
+    @DeleteMapping("/feign-proxy-post/userid/{userId}/postid/{postId}")
+    public void removePost(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId ) {
+        feignPostServiceProxy.deletePost(userId, postId);
+    }
+
     //Fault Tolerance
 
     public PostBean fallbackGetPost(@PathVariable Long id) {
