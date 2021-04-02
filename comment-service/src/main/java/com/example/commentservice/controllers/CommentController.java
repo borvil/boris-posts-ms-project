@@ -3,9 +3,12 @@ package com.example.commentservice.controllers;
 import com.example.commentservice.entities.Comment;
 import com.example.commentservice.services.interfaces.ICommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -13,6 +16,34 @@ import java.util.List;
 public class CommentController {
 
     private final ICommentService commentService;
+
+    @Autowired
+    private KafkaTemplate<String, List<Comment>> kafkaTemplate;
+
+    private static final String TOPIC = "comment_topic";
+
+
+
+
+    @GetMapping("/kafka/publish/userId/{userId}")
+    public String getAllCommentsByUserId(@PathVariable("userId")  Long userId) {
+
+        List<Comment> commentsByUserId = commentService.getCommentsByUserId(userId);
+
+        kafkaTemplate.send(TOPIC, commentsByUserId);
+
+        return "All the Comments of User was send";
+    }
+
+    @GetMapping("/kafka/publish/userId/{userId}/postId/{postId}")
+    public String getAllCommentsByUserIdAndPostId(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId) {
+
+        List<Comment> commentsByUserIdAndPostId = commentService.getCommentsByUserIdAndPostId(userId,postId);
+
+        kafkaTemplate.send(TOPIC, commentsByUserIdAndPostId);
+
+        return "All the Comments for the concrete  User and Post  was send";
+    }
 
 
     @GetMapping

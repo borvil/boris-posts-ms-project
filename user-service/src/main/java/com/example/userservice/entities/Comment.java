@@ -1,4 +1,4 @@
-package com.example.commentservice.entities;
+package com.example.userservice.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,15 +19,15 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
-
     private Long postId;
+
+    private Long userId;
 
     private String comment;
 
-    public Comment(Long userId, Long postId, String comment) {
-        this.userId = userId;
+    public Comment(Long postId, Long userId, String comment) {
         this.postId = postId;
+        this.userId = userId;
         this.comment = comment;
     }
 }

@@ -53,4 +53,18 @@ public class CommentServiceImpl implements ICommentService {
     public void deleteCommentById(Long id) {
         commentRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Comment> getCommentsByUserId(Long userId) {
+        return commentRepository.getCommentsByUserId(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Comment> getCommentsByUserIdAndPostId(Long userId, Long postId) {
+        return commentRepository.getCommentsByUserIdAndPostId(userId, postId);
+    }
+
+
 }

@@ -12,4 +12,9 @@ public interface ICommentService {
     Comment createComment(Comment comment);
     Comment updateComment(Long id, Comment comment);
     void deleteCommentById(Long id);
+    //Kafka
+    List<Comment> getCommentsByUserId(Long userId);
+    List<Comment> getCommentsByUserIdAndPostId(Long userId, Long postId);
+
+
 }
