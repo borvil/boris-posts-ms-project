@@ -4,12 +4,11 @@ import com.example.userservice.beans.PostBean;
 import com.example.userservice.entities.User;
 import com.example.userservice.feign_client.PostServiceProxy;
 import com.example.userservice.requests.UserPostRequestDTO;
+import com.example.userservice.requests.UserUpdateRequestDTO;
 import com.example.userservice.services.interfaces.IUserService;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.h2.util.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -49,9 +48,9 @@ public class UserController {
         userService.deleteUserById(id);
     }
 
-    @PutMapping("/{id}")
-    public User getUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.getUserById(id).get();
+    @PutMapping("/{businessKey}")
+    public String getUser(@PathVariable String businessKey, @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
+        return userUpdateRequestDTO.getFirstName()+" "+userUpdateRequestDTO.getLastName();
     }
 
     //Feign Client  Requests
