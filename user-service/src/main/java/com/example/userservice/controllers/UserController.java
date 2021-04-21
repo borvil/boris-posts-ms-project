@@ -3,6 +3,7 @@ package com.example.userservice.controllers;
 import com.example.userservice.beans.PostBean;
 import com.example.userservice.entities.User;
 import com.example.userservice.feign_client.PostServiceProxy;
+import com.example.userservice.requests.UserPostRequestDTO;
 import com.example.userservice.services.interfaces.IUserService;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -37,8 +38,10 @@ public class UserController {
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public String addUser(@RequestBody UserPostRequestDTO userPostRequestDTO) {
+
+        return userPostRequestDTO.getUsername()+" "+userPostRequestDTO.getEmail();
+        //return userService.createUser(userPostRequestDTO);
     }
 
     @DeleteMapping("/{id}")
