@@ -9,14 +9,16 @@
         <outputRelativeToContentRoot value="true" />
         <module name="post-service" />
         <module name="comment-service" />
-        <module name="user-service" />
+        <module name="authentication-service" />
         <module name="api-gateway-service" />
-        <module name="discovery-service" />
         <module name="spring-cloud-config-server" />
+        <module name="user-service" />
+        <module name="discovery-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="api-gateway-service" target="1.8" />
+      <module name="authentication-service" target="1.8" />
       <module name="comment-service" target="1.8" />
       <module name="discovery-service" target="1.8" />
       <module name="post-service" target="1.8" />
@@ -27,6 +29,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway-service" options="-parameters" />
+      <module name="authentication-service" options="-parameters" />
       <module name="comment-service" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
       <module name="post-service" options="-parameters" />

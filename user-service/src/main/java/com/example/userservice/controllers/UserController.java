@@ -30,7 +30,9 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers() {
+    public List<User> getUsers(@RequestParam(value = "page", defaultValue ="1") int page,
+                               @RequestParam(value = "limit", defaultValue = "50") int limit,
+                               @RequestParam(value = "sort", defaultValue = "desc", required = false) String sort) {
         return userService.getUserList();
     }
 
