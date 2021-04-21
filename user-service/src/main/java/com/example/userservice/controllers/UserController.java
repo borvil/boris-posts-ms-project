@@ -5,10 +5,12 @@ import com.example.userservice.entities.User;
 import com.example.userservice.feign_client.PostServiceProxy;
 import com.example.userservice.requests.UserPostRequestDTO;
 import com.example.userservice.requests.UserUpdateRequestDTO;
+import com.example.userservice.responses.UserResponseDTO;
 import com.example.userservice.services.interfaces.IUserService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -25,21 +27,36 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.getUserById(id).get();
+    public UserResponseDTO getUser(@PathVariable Long id) {
+        //return userService.getUserById(id).get();
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setFirstName("anoar");
+        userResponseDTO.setLastName("dahmanie");
+        userResponseDTO.setUsername("anouarDahmanie");
+        userResponseDTO.setEmail("this is the email");
+        return userResponseDTO;
     }
 
     @GetMapping
-    public List<User> getUsers(@RequestParam(value = "page", defaultValue ="1") int page,
+    public List<UserResponseDTO> getUsers(@RequestParam(value = "page", defaultValue ="1") int page,
                                @RequestParam(value = "limit", defaultValue = "50") int limit,
                                @RequestParam(value = "sort", defaultValue = "desc", required = false) String sort) {
-        return userService.getUserList();
+        //return userService.getUserList();
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setFirstName("anoar");
+        userResponseDTO.setLastName("dahmanie");
+        userResponseDTO.setUsername("anouarDahmanie");
+        userResponseDTO.setEmail("this is the email from the list of users");
+        List<UserResponseDTO> userResponseDTOList = new ArrayList<>();
+        userResponseDTOList.add(userResponseDTO);
+        return userResponseDTOList;
     }
 
     @PostMapping
-    public String addUser(@RequestBody UserPostRequestDTO userPostRequestDTO) {
-
-        return userPostRequestDTO.getUsername()+" "+userPostRequestDTO.getEmail();
+    public UserResponseDTO addUser(@RequestBody UserPostRequestDTO userPostRequestDTO) {
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        BeanUtils.copyProperties(userPostRequestDTO, userResponseDTO);
+        return userResponseDTO;
         //return userService.createUser(userPostRequestDTO);
     }
 
@@ -49,8 +66,10 @@ public class UserController {
     }
 
     @PutMapping("/{businessKey}")
-    public String getUser(@PathVariable String businessKey, @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
-        return userUpdateRequestDTO.getFirstName()+" "+userUpdateRequestDTO.getLastName();
+    public UserResponseDTO getUser(@PathVariable String businessKey, @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        BeanUtils.copyProperties(userUpdateRequestDTO, userResponseDTO);
+        return userResponseDTO;
     }
 
     //Feign Client  Requests
