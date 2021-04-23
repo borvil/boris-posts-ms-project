@@ -1,14 +1,14 @@
 package com.example.userservice.services.interfaces;
 
 import com.example.userservice.entities.User;
+import com.example.userservice.transfers.UserServiceDTO;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Collection;
 
 public interface IUserService {
-    Optional<User> getUserById(Long id);
-    List<User> getUserList();
-    User createUser(User user);
+    UserServiceDTO getUserById(Long id);
+    Collection<UserServiceDTO> getUserList();
+    UserServiceDTO createUser(UserServiceDTO userServiceDTO);
     User updateUser(Long id, User user);
     void deleteUserById(Long id);
 

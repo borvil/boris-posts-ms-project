@@ -24,4 +24,5 @@ public class UserServiceApplication {
 		return Sampler.ALWAYS_SAMPLE;
 	}
 
+
 }

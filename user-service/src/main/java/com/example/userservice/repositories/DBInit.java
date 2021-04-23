@@ -19,9 +19,9 @@ public class DBInit implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         List<User> users = Arrays.asList(
-                new User("John", "john.smith@gmail.com", "John", "Smith"),
-                new User("Peter", "peter.vandam@gmail.com", "Peter", "Vandam"),
-                new User("Marie", "Marie.dupont@gmail.com", "Marie", "Dupont")
+                new User("John", "Smith", "JohnSmith", "john.smith@gmail.com", "pass11"),
+                new User("Peter", "Vandaam", "PeterVAn", "peter.vandam@gmail.com", "pass22"),
+                new User("Marie", "Dupont", "MarieDupont", "Marie.dupont@gmail.com", "pass33")
         );
 
         userRepository.saveAll(users);

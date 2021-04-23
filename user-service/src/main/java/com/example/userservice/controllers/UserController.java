@@ -1,12 +1,12 @@
 package com.example.userservice.controllers;
 
 import com.example.userservice.beans.PostBean;
-import com.example.userservice.entities.User;
 import com.example.userservice.feign_client.PostServiceProxy;
 import com.example.userservice.requests.UserPostRequestDTO;
 import com.example.userservice.requests.UserUpdateRequestDTO;
 import com.example.userservice.responses.UserResponseDTO;
 import com.example.userservice.services.interfaces.IUserService;
+import com.example.userservice.transfers.UserServiceDTO;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,34 +30,26 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserResponseDTO getUser(@PathVariable Long id) {
-        //return userService.getUserById(id).get();
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setFirstName("anoar");
-        userResponseDTO.setLastName("dahmanie");
-        userResponseDTO.setUsername("anouarDahmanie");
-        userResponseDTO.setEmail("this is the email");
+        UserServiceDTO userServiceDTO = userService.getUserById(id);
+        UserResponseDTO userResponseDTO = userServiceDTO.toResponseDTO();
         return userResponseDTO;
     }
 
     @GetMapping
-    public List<UserResponseDTO> getUsers(@RequestParam(value = "page", defaultValue ="1") int page,
-                               @RequestParam(value = "limit", defaultValue = "50") int limit,
-                               @RequestParam(value = "sort", defaultValue = "desc", required = false) String sort) {
-        //return userService.getUserList();
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setFirstName("anoar");
-        userResponseDTO.setLastName("dahmanie");
-        userResponseDTO.setUsername("anouarDahmanie");
-        userResponseDTO.setEmail("this is the email from the list of users");
-        List<UserResponseDTO> userResponseDTOList = new ArrayList<>();
-        userResponseDTOList.add(userResponseDTO);
+    public Collection<UserResponseDTO> getUsers(@RequestParam(value = "page", defaultValue = "1") int page,
+                                                @RequestParam(value = "limit", defaultValue = "50") int limit,
+                                                @RequestParam(value = "sort", defaultValue = "desc", required = false) String sort) {
+
+        List<UserResponseDTO> userResponseDTOList =
+                userService.getUserList().stream().map(u -> u.toResponseDTO()).collect(Collectors.toList());
+
         return userResponseDTOList;
     }
 
     @PostMapping
     public UserResponseDTO addUser(@RequestBody UserPostRequestDTO userPostRequestDTO) {
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        BeanUtils.copyProperties(userPostRequestDTO, userResponseDTO);
+        UserServiceDTO savedUser = userService.createUser(userPostRequestDTO.toUserServiceDTO());
+        UserResponseDTO userResponseDTO = savedUser.toResponseDTO();
         return userResponseDTO;
         //return userService.createUser(userPostRequestDTO);
     }
@@ -97,8 +91,8 @@ public class UserController {
 
     }
 
-    @PostMapping(value = "/feign-proxy-posts/{userId}" )
-    public PostBean addPostByUser(@PathVariable Long userId,@RequestBody String post) {
+    @PostMapping(value = "/feign-proxy-posts/{userId}")
+    public PostBean addPostByUser(@PathVariable Long userId, @RequestBody String post) {
         PostBean createdPost = feignPostServiceProxy.addPostByUser(userId, post);
         log.info("{}", createdPost);
         return new PostBean(createdPost.getId(), createdPost.getPost(), createdPost.getUserId());
@@ -106,7 +100,7 @@ public class UserController {
     }
 
     @DeleteMapping("/feign-proxy-post/userid/{userId}/postid/{postId}")
-    public void removePost(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId ) {
+    public void removePost(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId) {
         feignPostServiceProxy.deletePost(userId, postId);
     }
 
@@ -119,7 +113,7 @@ public class UserController {
     public List<PostBean> fallbackGetPostsByUserId(@PathVariable Long id) {
         List<PostBean> fallbackPostBeanList = Arrays.asList(new PostBean(10001L, "This is the fallback list post message", 2L),
                 new PostBean(10002L, "This is the fallback post list  message", 1L));
-     return fallbackPostBeanList;
+        return fallbackPostBeanList;
     }
 
 
