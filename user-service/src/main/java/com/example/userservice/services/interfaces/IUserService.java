@@ -4,12 +4,13 @@ import com.example.userservice.entities.User;
 import com.example.userservice.transfers.UserServiceDTO;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public interface IUserService {
-    UserServiceDTO getUserById(Long id);
+    UserServiceDTO getUserByUserId(UUID userId);
     Collection<UserServiceDTO> getUserList();
     UserServiceDTO createUser(UserServiceDTO userServiceDTO);
-    User updateUser(Long id, User user);
-    void deleteUserById(Long id);
+    UserServiceDTO updateUser(UUID userId, UserServiceDTO userServiceDTO);
+    void deleteUserByUserId(UUID userId);
 
 }

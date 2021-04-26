@@ -12,9 +12,9 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Data
-@Entity
+@Entity(name = "users")
 @NoArgsConstructor
-@SQLDelete(sql = "update course set is_deleted=true where id=?")
+@SQLDelete(sql = "update users set is_deleted=true where id=?")
 @Where(clause = "is_deleted = false")
 public class User implements Serializable {
 
@@ -61,6 +61,8 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
     }
+
+
 
     public UserServiceDTO toUserServiceDTO() {
         UserServiceDTO userServiceDTO = new UserServiceDTO();

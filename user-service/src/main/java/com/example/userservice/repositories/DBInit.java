@@ -24,7 +24,9 @@ public class DBInit implements CommandLineRunner {
                 new User("Marie", "Dupont", "MarieDupont", "Marie.dupont@gmail.com", "pass33")
         );
 
-        userRepository.saveAll(users);
+        List<User> userList = userRepository.saveAll(users);
+        userList.stream().forEach(System.out::println);
+
 
     }
 }

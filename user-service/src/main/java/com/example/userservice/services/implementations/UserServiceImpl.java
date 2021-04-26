@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -20,11 +22,10 @@ public class UserServiceImpl implements IUserService {
 
     private final UserRepository userRepository;
 
-
     @Override
     @Transactional(readOnly = true)
-    public UserServiceDTO getUserById(Long id) {
-        Optional<User> user= userRepository.findById(id);
+    public UserServiceDTO getUserByUserId(UUID userId) {
+        Optional<User> user= userRepository.findUserByUserId(userId);
 
         if (!user.isPresent()){
             throw new RuntimeException("The exception is here");
@@ -51,24 +52,31 @@ public class UserServiceImpl implements IUserService {
         User user = userRepository.save(candidateSavedUser);
         return user.toUserServiceDTO();
     }
-
     @Override
     @Transactional
-    public User updateUser(Long id, User user) {
+    public UserServiceDTO updateUser(UUID userId, UserServiceDTO userServiceDTO) {
 
-        Optional<User> optionalUser = userRepository.findById(id);
+        Optional<User> optionalUser = userRepository.findUserByUserId(userId);
         if (!optionalUser.isPresent()) {
-            throw new RuntimeException("The user is not exist");
+            throw new RuntimeException("The user was not found");
         }
-        optionalUser.get().setLastName(user.getLastName());
-        optionalUser.get().setFirstName(user.getFirstName());
-        return optionalUser.get();
+        optionalUser.get().setUserId(userServiceDTO.getUserId());
+        optionalUser.get().setFirstName(userServiceDTO.getFirstName());
+        optionalUser.get().setLastName(userServiceDTO.getLastName());
+        optionalUser.get().setUsername(userServiceDTO.getUsername());
+        optionalUser.get().setEmail(userServiceDTO.getEmail());
+        return optionalUser.get().toUserServiceDTO();
 
     }
 
     @Override
     @Transactional
-    public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
+    public void deleteUserByUserId(UUID userId) {
+        Optional<User> user= userRepository.findUserByUserId(userId);
+
+        if (!user.isPresent()){
+            throw new RuntimeException("The user was not found is here");
+        }
+        userRepository.deleteUserByUserId(userId);
     }
 }

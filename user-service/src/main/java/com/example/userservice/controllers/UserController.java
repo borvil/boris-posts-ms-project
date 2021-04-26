@@ -13,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,9 +25,9 @@ public class UserController {
     private final PostServiceProxy feignPostServiceProxy;
 
 
-    @GetMapping("/{id}")
-    public UserResponseDTO getUser(@PathVariable Long id) {
-        UserServiceDTO userServiceDTO = userService.getUserById(id);
+    @GetMapping("/{userId}")
+    public UserResponseDTO getUser(@PathVariable  String userId) {
+        UserServiceDTO userServiceDTO = userService.getUserByUserId(UUID.fromString(userId));
         UserResponseDTO userResponseDTO = userServiceDTO.toResponseDTO();
         return userResponseDTO;
     }
@@ -51,19 +48,17 @@ public class UserController {
         UserServiceDTO savedUser = userService.createUser(userPostRequestDTO.toUserServiceDTO());
         UserResponseDTO userResponseDTO = savedUser.toResponseDTO();
         return userResponseDTO;
-        //return userService.createUser(userPostRequestDTO);
     }
 
-    @DeleteMapping("/{id}")
-    public void removeUser(@PathVariable Long id) {
-        userService.deleteUserById(id);
+    @DeleteMapping("/{userId}")
+    public void removeUser(@PathVariable String userId) {
+        userService.deleteUserByUserId(UUID.fromString(userId));
     }
 
-    @PutMapping("/{businessKey}")
-    public UserResponseDTO getUser(@PathVariable String businessKey, @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        BeanUtils.copyProperties(userUpdateRequestDTO, userResponseDTO);
-        return userResponseDTO;
+    @PutMapping("/{userId}")
+    public UserResponseDTO updateUser(@PathVariable String userId, @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
+        UserServiceDTO userServiceDTO = userService.updateUser(UUID.fromString(userId), userUpdateRequestDTO.toUserServiceDTO());
+        return userServiceDTO.toResponseDTO();
     }
 
     //Feign Client  Requests
@@ -115,6 +110,8 @@ public class UserController {
                 new PostBean(10002L, "This is the fallback post list  message", 1L));
         return fallbackPostBeanList;
     }
+
+
 
 
 }
