@@ -11,6 +11,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -25,17 +26,18 @@ public class UserController {
     private final PostServiceProxy feignPostServiceProxy;
 
 
-    @GetMapping("/{userId}")
-    public UserResponseDTO getUser(@PathVariable  String userId) {
+    @GetMapping(value = "/{userId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public UserResponseDTO getUser(@PathVariable String userId) {
         UserServiceDTO userServiceDTO = userService.getUserByUserId(UUID.fromString(userId));
         UserResponseDTO userResponseDTO = userServiceDTO.toResponseDTO();
         return userResponseDTO;
     }
 
-    @GetMapping
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Collection<UserResponseDTO> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                 @RequestParam(value = "limit", defaultValue = "50") int limit,
-                                                @RequestParam(value = "sort", defaultValue = "email", required = false) String sort) {
+                                                @RequestParam(value = "sort", defaultValue = "email", required = false)
+                                                        String sort) {
 
         List<UserResponseDTO> userResponseDTOList =
                 userService.getUserList(page, limit, sort)
@@ -45,27 +47,33 @@ public class UserController {
         return userResponseDTOList;
     }
 
-    @PostMapping
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserResponseDTO addUser(@RequestBody UserPostRequestDTO userPostRequestDTO) {
         UserServiceDTO savedUser = userService.createUser(userPostRequestDTO.toUserServiceDTO());
         UserResponseDTO userResponseDTO = savedUser.toResponseDTO();
         return userResponseDTO;
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping(value = "/{userId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public void removeUser(@PathVariable String userId) {
         userService.deleteUserByUserId(UUID.fromString(userId));
     }
 
-    @PutMapping("/{userId}")
-    public UserResponseDTO updateUser(@PathVariable String userId, @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
-        UserServiceDTO userServiceDTO = userService.updateUser(UUID.fromString(userId), userUpdateRequestDTO.toUserServiceDTO());
+    @PutMapping(value = "/{userId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public UserResponseDTO updateUser(@PathVariable String userId,
+                                      @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
+        UserServiceDTO userServiceDTO = userService
+                .updateUser(UUID.fromString(userId), userUpdateRequestDTO.toUserServiceDTO());
         return userServiceDTO.toResponseDTO();
     }
 
     //Feign Client  Requests
 
-    @GetMapping("/feign-proxy-post/{id}")
+    @GetMapping(value = "/feign-proxy-post/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @HystrixCommand(fallbackMethod = "fallbackGetPost")
     public PostBean getPost(@PathVariable Long id) {
         PostBean response = feignPostServiceProxy.getPost(id);
@@ -75,7 +83,8 @@ public class UserController {
     }
 
 
-    @GetMapping("/feign-proxy-posts/{id}")
+    @GetMapping(value = "/feign-proxy-posts/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @HystrixCommand(fallbackMethod = "fallbackGetPostsByUserId")
     public List<PostBean> getPostsByUserId(@PathVariable Long id) {
         List<PostBean> response = feignPostServiceProxy.getAllPostByUserId(id);
@@ -88,7 +97,9 @@ public class UserController {
 
     }
 
-    @PostMapping(value = "/feign-proxy-posts/{userId}")
+    @PostMapping(value = "/feign-proxy-posts/{userId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public PostBean addPostByUser(@PathVariable Long userId, @RequestBody String post) {
         PostBean createdPost = feignPostServiceProxy.addPostByUser(userId, post);
         log.info("{}", createdPost);
@@ -96,7 +107,8 @@ public class UserController {
 
     }
 
-    @DeleteMapping("/feign-proxy-post/userid/{userId}/postid/{postId}")
+    @DeleteMapping(value = "/feign-proxy-post/userid/{userId}/postid/{postId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public void removePost(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId) {
         feignPostServiceProxy.deletePost(userId, postId);
     }
@@ -108,12 +120,12 @@ public class UserController {
     }
 
     public List<PostBean> fallbackGetPostsByUserId(@PathVariable Long id) {
-        List<PostBean> fallbackPostBeanList = Arrays.asList(new PostBean(10001L, "This is the fallback list post message", 2L),
-                new PostBean(10002L, "This is the fallback post list  message", 1L));
+        List<PostBean> fallbackPostBeanList = Arrays.asList(
+                new PostBean(10001L, "This is the fallback list post message", 2L),
+                new PostBean(10002L, "This is the fallback post list  message", 1L)
+        );
         return fallbackPostBeanList;
     }
-
-
 
 
 }
