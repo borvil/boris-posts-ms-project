@@ -10,8 +10,11 @@ import com.example.userservice.transfers.UserServiceDTO;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -27,14 +30,14 @@ public class UserController {
 
 
     @GetMapping(value = "/{userId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public UserResponseDTO getUser(@PathVariable String userId) {
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable String userId) {
         UserServiceDTO userServiceDTO = userService.getUserByUserId(UUID.fromString(userId));
         UserResponseDTO userResponseDTO = userServiceDTO.toResponseDTO();
-        return userResponseDTO;
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDTO);
     }
 
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public Collection<UserResponseDTO> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+    public ResponseEntity<Collection<UserResponseDTO>> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                 @RequestParam(value = "limit", defaultValue = "50") int limit,
                                                 @RequestParam(value = "sort", defaultValue = "email", required = false)
                                                         String sort) {
@@ -44,30 +47,31 @@ public class UserController {
                         .stream()
                         .map(u -> u.toResponseDTO())
                         .collect(Collectors.toList());
-        return userResponseDTOList;
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDTOList);
     }
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public UserResponseDTO addUser(@RequestBody UserPostRequestDTO userPostRequestDTO) {
+    public ResponseEntity<UserResponseDTO> addUser(@RequestBody UserPostRequestDTO userPostRequestDTO) {
         UserServiceDTO savedUser = userService.createUser(userPostRequestDTO.toUserServiceDTO());
         UserResponseDTO userResponseDTO = savedUser.toResponseDTO();
-        return userResponseDTO;
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);
     }
 
-    @DeleteMapping(value = "/{userId}",
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @DeleteMapping(value = "/{userId}")
+    @ResponseStatus(HttpStatus.OK)
     public void removeUser(@PathVariable String userId) {
         userService.deleteUserByUserId(UUID.fromString(userId));
+
     }
 
     @PutMapping(value = "/{userId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public UserResponseDTO updateUser(@PathVariable String userId,
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable String userId,
                                       @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
         UserServiceDTO userServiceDTO = userService
                 .updateUser(UUID.fromString(userId), userUpdateRequestDTO.toUserServiceDTO());
-        return userServiceDTO.toResponseDTO();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(userServiceDTO.toResponseDTO());
     }
 
     //Feign Client  Requests
