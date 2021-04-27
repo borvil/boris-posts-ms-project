@@ -5,6 +5,10 @@ import com.example.userservice.repositories.UserRepository;
 import com.example.userservice.services.interfaces.IUserService;
 import com.example.userservice.transfers.UserServiceDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +29,9 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional(readOnly = true)
     public UserServiceDTO getUserByUserId(UUID userId) {
-        Optional<User> user= userRepository.findUserByUserId(userId);
+        Optional<User> user = userRepository.findUserByUserId(userId);
 
-        if (!user.isPresent()){
+        if (!user.isPresent()) {
             throw new RuntimeException("The exception is here");
         }
         UserServiceDTO userServiceDTO = user.get().toUserServiceDTO();
@@ -35,14 +39,15 @@ public class UserServiceImpl implements IUserService {
         return userServiceDTO;
     }
 
+
     @Override
-    @Transactional
-    public Collection<UserServiceDTO> getUserList() {
-        return userRepository
-                .findAll()
-                .stream()
-                .map(u->u.toUserServiceDTO())
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Collection<UserServiceDTO> getUserList(int page, int limit, String sort) {
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(sort));
+        Page<User> users = userRepository.findAll(pageable);
+        List<User> userList = users.getContent();
+        List<UserServiceDTO> userServiceDTOList = userList.stream().map(user -> user.toUserServiceDTO()).collect(Collectors.toList());
+        return userServiceDTOList;
     }
 
     @Override
@@ -52,6 +57,7 @@ public class UserServiceImpl implements IUserService {
         User user = userRepository.save(candidateSavedUser);
         return user.toUserServiceDTO();
     }
+
     @Override
     @Transactional
     public UserServiceDTO updateUser(UUID userId, UserServiceDTO userServiceDTO) {
@@ -72,9 +78,9 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional
     public void deleteUserByUserId(UUID userId) {
-        Optional<User> user= userRepository.findUserByUserId(userId);
+        Optional<User> user = userRepository.findUserByUserId(userId);
 
-        if (!user.isPresent()){
+        if (!user.isPresent()) {
             throw new RuntimeException("The user was not found is here");
         }
         userRepository.deleteUserByUserId(userId);

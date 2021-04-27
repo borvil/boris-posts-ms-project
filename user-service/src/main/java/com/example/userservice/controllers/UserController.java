@@ -33,13 +33,15 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<UserResponseDTO> getUsers(@RequestParam(value = "page", defaultValue = "1") int page,
+    public Collection<UserResponseDTO> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                 @RequestParam(value = "limit", defaultValue = "50") int limit,
-                                                @RequestParam(value = "sort", defaultValue = "desc", required = false) String sort) {
+                                                @RequestParam(value = "sort", defaultValue = "email", required = false) String sort) {
 
         List<UserResponseDTO> userResponseDTOList =
-                userService.getUserList().stream().map(u -> u.toResponseDTO()).collect(Collectors.toList());
-
+                userService.getUserList(page, limit, sort)
+                        .stream()
+                        .map(u -> u.toResponseDTO())
+                        .collect(Collectors.toList());
         return userResponseDTOList;
     }
 
